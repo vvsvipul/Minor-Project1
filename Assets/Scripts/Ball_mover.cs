@@ -6,45 +6,44 @@ using UnityEngine.UI;
 public class Ball_mover : MonoBehaviour
 {
     [SerializeField] float initialSpeed=10f;
-    [SerializeField] float speedIncrease=0.25f;
     [SerializeField] Text playerScore;
     [SerializeField] Text AIScore;
-
-    int hitCounter;
-    Rigidbody2D rb;
-
+    
+    Rigidbody rb;
+    
     [SerializeField] GameObject player;
     [SerializeField] GameObject ai;
+
+
+    float xDirection = 0, yDirection = 0f, zDirection = -2;
     void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
+        rb = GetComponent<Rigidbody>();
         Invoke("StartBall", 2f);
     }
 
     private void FixedUpdate()
     {
-        rb.velocity = Vector2.ClampMagnitude(rb.velocity,initialSpeed);
+        rb.velocity = Vector3.ClampMagnitude(rb.velocity,initialSpeed);
     }
     private void StartBall()
     {
-        rb.velocity = new Vector2(-1, 0) * (initialSpeed );
+        rb.velocity = new Vector3(-1f,0f,0f) * (initialSpeed);
     }
     private void ResetBall()
     {
-        rb.velocity = new Vector2(0, 0);
-        transform.position = new Vector2(0, 0);
-        hitCounter = 0;
+        rb.velocity = new Vector3(0f,0f, 0f);
+        transform.position = new Vector3(8f,0.4f, 0f);
         Invoke("StartBall", 2f);
 
     }
     private void PlayerBounce(Transform myObject)
     {
-        hitCounter++;
-        Vector2 ballPos = transform.position;
-        Vector2 playerPos = myObject.position;
+        Vector3 ballPos = transform.position;
+        Vector3 playerPos = myObject.position;
 
-        float xDirection, yDirection;
-        if (transform.position.x > 0)
+
+        if (transform.position.x > 8)
         {
             xDirection = -1;
         }
@@ -52,30 +51,35 @@ public class Ball_mover : MonoBehaviour
         {
             xDirection = 1;
         }
-        yDirection = (ballPos.y - playerPos.y) / myObject.GetComponent<Collider2D>().bounds.size.y;
-        if (yDirection == 0)
+        zDirection = (ballPos.z - playerPos.z)*1.5f/ myObject.GetComponent<Collider>().bounds.size.z;
+        if (zDirection == 0)
         {
-            yDirection = 0.25f;
+            zDirection = 0.25f;
         }
-        rb.velocity = new Vector2(xDirection,yDirection)*(initialSpeed);
+        rb.velocity = new Vector3(xDirection,yDirection,zDirection)*(initialSpeed);
     
     
     }
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.name == "AI" || collision.gameObject.name == "Player")
         {
+            Debug.Log("Collsion occured with " + collision.gameObject.name);
             PlayerBounce(collision.transform);
         }
+        else if(collision.gameObject.name == "Top Bar" || collision.gameObject.name == "Bottom Bar")
+        {
+            rb.velocity= new Vector3(xDirection, yDirection, -zDirection) * (initialSpeed);
+        }
     }
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void OnTriggerEnter(Collider other)
     {
-        if (transform.position.x>0)
+        if (transform.position.x > 8)
         {
             ResetBall();
             playerScore.text = (int.Parse(playerScore.text) + 1).ToString();
         }
-        else if(transform.position.x < 0)
+        else if (transform.position.x < 0)
         {
             ResetBall();
             AIScore.text = (int.Parse(AIScore.text) + 1).ToString();

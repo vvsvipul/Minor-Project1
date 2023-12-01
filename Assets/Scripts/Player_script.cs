@@ -15,24 +15,18 @@ public class Player_script : MonoBehaviour
     [SerializeField] int gameSpeed = 0;
     [SerializeField] bool isPerfect = false;
     
-    string relativePath = "abc.json";
+    string relativePath = "pingQ.json";
 
-    
-
-    int padState = 0;
-    int ballState = 0;
-    float ballPosition = 0f;
-    float padPosition = 0f;
     int state = 0;
 
     float[,] Q_table=new float[3,3];
 
-    private Rigidbody2D rb;
-    private Vector2 playerMove;
+    private Rigidbody rb;
+    private Vector3 playerMove;
 
 
     float expl_val = 1.0f;
-    float exploration_decay = 0.1f;
+    float exploration_decay = 0.05f;
     float learning_rate = 0.01f;
     float gamma = 0.5f;
 
@@ -45,7 +39,7 @@ public class Player_script : MonoBehaviour
   
     void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
+        rb = GetComponent<Rigidbody>();
         Time.timeScale = gameSpeed;
         if (isPerfect)
         {
@@ -64,7 +58,7 @@ public class Player_script : MonoBehaviour
         else
         {
             PlayerControl();
-            if (episodes == 500)
+            if (episodes == 240000)
             {
                 SaveToFile();
             }
@@ -74,7 +68,7 @@ public class Player_script : MonoBehaviour
 
     {
         Time.timeScale = gameSpeed;
-        if ((ball.GetComponent<Rigidbody2D>().velocity.x == 0) && (ball.GetComponent<Rigidbody2D>().velocity.y == 0))
+        if ((ball.transform.position.x == 8) && (ball.GetComponent<Rigidbody>().velocity.z == 0))
             return;
         if (fp < 0.1f)
         {
@@ -84,8 +78,6 @@ public class Player_script : MonoBehaviour
         fp = 0;
         int newState = State();
         
-        ballPosition = ball.transform.position.x;
-        padPosition = transform.position.y;
         Debug.Log("Episdes: " + episodes);
 
         float reward = Reward();
@@ -143,15 +135,15 @@ public class Player_script : MonoBehaviour
 
         if (action == 0)
         {
-            playerMove = new Vector2(0f, 0f);
+            playerMove = new Vector3(0f,0f, 0f);
         }
         else if(action == 1)
         {
-            playerMove = new Vector2(0f, 1f);
+            playerMove = new Vector3(0f,0f ,1f);
         }
         else
         {
-            playerMove = new Vector2(0f, -1f);
+            playerMove = new Vector3(0f, 0f,-1f);
         }
         if(!isAI)
             rb.velocity = playerMove * movementSpeed;
@@ -159,17 +151,17 @@ public class Player_script : MonoBehaviour
     }
     private void AIControl()
     {
-        if (ball.transform.position.y > transform.position.y + 0.5f)
+        if (ball.transform.position.z > transform.position.z + 0.5f)
         {
-            playerMove = new Vector2(0, 1);
+            playerMove = new Vector3(0, 0,1);
         }
-        else if (ball.transform.position.y < transform.position.y - 0.5f)
+        else if (ball.transform.position.z < transform.position.z - 0.5f)
         {
-            playerMove = new Vector2(0, -1);
+            playerMove = new Vector3(0, 0,-1);
         }
         else
         {
-            playerMove = new Vector2(0, 0);
+            playerMove = new Vector3(0, 0,0);
         }
     }
     private void FixedUpdate()
@@ -179,12 +171,11 @@ public class Player_script : MonoBehaviour
     }
     int State()
     {
-        if (Math.Abs(transform.position.y - ball.transform.position.y)<0.5f)
+        if (Math.Abs(transform.position.z - ball.transform.position.z)<1f)
         {
-
             return 0;
         }
-        else if (transform.position.y > ball.transform.position.y)
+        else if (transform.position.z > ball.transform.position.z)
         {
             return 1;
         }
@@ -194,11 +185,15 @@ public class Player_script : MonoBehaviour
     }
     private float Reward()
     {
-        return 1-Math.Abs(ball.transform.position.y - transform.position.y);
+        //Debug.Log("Reward: " + (5 - Math.Abs(ball.transform.position.z - transform.position.z)));
+        //if (Math.Abs(ball.transform.position.z - transform.position.z) > 1)
+            return (7 - Math.Abs(ball.transform.position.z - transform.position.z));
+        //else
+            //return 3;
     }
     private void SaveToFile()
     {
-        string path = "C:\\Users\\Vipul\\Ping Pong v2\\Assets\\Scripts\\" + relativePath;
+        string path = "C:\\Users\\Vipul\\Minor1\\Assets\\Scripts\\" + relativePath;
         if (File.Exists(path))
         {
             try
@@ -234,7 +229,7 @@ public class Player_script : MonoBehaviour
     }
     private void LoadFromFile()
     {
-        string path = "C:\\Users\\Vipul\\Ping Pong v2\\Assets\\Scripts\\" + relativePath;
+        string path = "C:\\Users\\Vipul\\Minor1\\Assets\\Scripts\\" + relativePath;
         Q_table = JsonConvert.DeserializeObject<float[,]>(File.ReadAllText(path));
         expl_val = 0;
     }

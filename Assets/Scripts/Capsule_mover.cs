@@ -16,7 +16,7 @@ public class Capsule_mover : MonoBehaviour
     Rigidbody rb;
     [SerializeField] float jumpForce = 5f;
     [SerializeField] GameObject[] cubes;
-    public static Capsule_mover Instance;
+    //public static Capsule_mover Instance;
     float[,] Q_table = { { 1.0f, 1.0f }, { 1.0f, 1.0f }, { 1.0f, 1.0f }, { 1.0f, 1.0f }, { 1.0f, 1.0f }, { 1.0f, 1.0f }, { 1.0f, 1.0f }, { 1.0f, 1.0f }, { 1.0f, 1.0f }, { 1.0f, 1.0f }, { 1.0f, 1.0f }, { 1.0f, 1.0f }, { 1.0f, 1.0f } , { 1.0f, 1.0f } , { 1.0f, 1.0f }, { 1.0f, 1.0f }, { 1.0f, 1.0f }, { 1.0f, 1.0f }, { 1.0f, 1.0f } };
     [SerializeField] int saveThreshold =250;
 
@@ -39,7 +39,7 @@ public class Capsule_mover : MonoBehaviour
     int total_score = 0;
 
     string relativePath = "abc.json";
-    private void Awake()
+    /*private void Awake()
     {
         // start of new code
         if (Instance != null)
@@ -51,7 +51,7 @@ public class Capsule_mover : MonoBehaviour
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
-    }
+    }*/
     void Start()
     {
         Time.timeScale = game_speed;

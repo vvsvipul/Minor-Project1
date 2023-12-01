@@ -1,6 +1,8 @@
+using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,6 +13,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject box;
     [SerializeField] int gameSpeed;
     [SerializeField] Text disp;
+    string relativePath = "BoxPush.json";
 
     float[,] states = { { -1.6f, 0.7f, -3f }, { 0f, 0.7f, -3f }, { 1.6f, 0.7f, -3f }, { 3f, 0.7f, -1.6f }, { 3f, 0.7f, 0f }, { 3f, 0.7f, 1.6f }, { 1.6f, 0.7f, 3f }, { 0f, 0.7f, 3f }, { -1.6f, 0.7f, 3f }, { -3f, 0.7f, 1.6f }, { -3f, 0.7f, 0f }, { -3f, 0.7f, -1.6f } };
 
@@ -91,7 +94,11 @@ public class GameManager : MonoBehaviour
         fp = 0;
         box.transform.position = new Vector3(0f, 1f, 0f);
         box.transform.eulerAngles = new Vector3(0f, 0f, 0f);
-
+        if (expl_val <= 0)
+        {
+            SaveToFile(relativePath);
+            SaveToFile(relativePath + "2");
+        }
         firstIteration = false;
 
 
@@ -196,6 +203,47 @@ public class GameManager : MonoBehaviour
         }
         return maxI;
     }
+    private void SaveToFile(string Path)
+    {
+        string path = "C:\\Users\\Vipul\\Minor1\\Assets\\Scripts\\" + Path;
+        if (File.Exists(path))
+        {
+            try
+            {
+                Debug.Log("Data exists. Deleting old file and writing a new one: " + path);
+                File.Delete(path);
+                using FileStream stream = File.Create(path);
+                stream.Close();
+                if(Path=="BoxPush.json")
+                    File.WriteAllText(path, JsonConvert.SerializeObject(Q_Table1));
+                else
+                    File.WriteAllText(path, JsonConvert.SerializeObject(Q_Table2));
+                stream.Close();
+            }
+            catch (Exception e)
+            {
+                Debug.Log("Error" + e);
+            }
 
+        }
+        else
+        {
+            try
+            {
+                Debug.Log("Data exists. Deleting old file and writing a new one");
+                using FileStream stream = File.Create(path);
+                stream.Close();
+                if (Path == "BoxPush.json")
+                    File.WriteAllText(path, JsonConvert.SerializeObject(Q_Table1));
+                else
+                    File.WriteAllText(path, JsonConvert.SerializeObject(Q_Table2));
+                stream.Close();
+            }
+            catch (Exception e)
+            {
+                Debug.Log("Error" + e);
+            }
+        }
+    }
 
 }

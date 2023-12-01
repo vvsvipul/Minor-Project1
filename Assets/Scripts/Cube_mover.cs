@@ -12,7 +12,6 @@ public class Cube_mover : MonoBehaviour
         rb.velocity = new Vector3(speed, 0f, 0f);
     }
 
-
     void Update()
     {
         if (transform.position.x < -3)

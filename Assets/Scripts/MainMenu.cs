@@ -11,6 +11,18 @@ public class MainMenu : MonoBehaviour
     }
     public void BoxPush()
     {
-        SceneManager.LoadScene("pong");
+        SceneManager.LoadScene("bxp");
+    }
+    public void MainM()
+    {
+        SceneManager.LoadScene("a");
+    }
+    public void Apple()
+    {
+        SceneManager.LoadScene("bxf");
+    }
+    public void Ping()
+    {
+        SceneManager.LoadScene("ping");
     }
 }
